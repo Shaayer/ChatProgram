@@ -10,7 +10,7 @@ namespace ChatProgram
     internal class Program
     {
         
-        public static void Main(string[] args)
+        public static void Main0(string[] args)
         {
             IPEndPoint endpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8080);
             Console.WriteLine("Have endpoint: "+endpoint);
