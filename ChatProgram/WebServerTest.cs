@@ -85,20 +85,35 @@ namespace MrV {
 
       if (inputData.Length > 0)
       {
+        Console.WriteLine("");
         Console.WriteLine(inputData);
       }
+      else
+      {
+        return;
+      }
+
+      int clientNotified = 0;
       for (int i = 0; i < streams.Count; i++)
       {
         NetworkStream s = streams[i];
         try
         {
+          // Task writeTask= s.WriteAsync(Encoding.ASCII.GetBytes(inputData), 0, inputData.Length);
           s.Write(Encoding.ASCII.GetBytes(inputData), 0, inputData.Length);
+          // while (!writeTask.IsCompleted)
+          // {
+          //   Thread.Sleep(1);
+          // }
+          s.Flush();
+          clientNotified++;
         }
         catch(Exception e)
         {
           Console.WriteLine(e.Message);
         }
       }
+      Console.WriteLine("ClientNotified: "+clientNotified);
     }
     public static void Client()
     {
@@ -108,10 +123,20 @@ namespace MrV {
       byte[] bytes = Encoding.ASCII.GetBytes("<b>hello</b>");
       clientStream.Write(bytes, 0, bytes.Length);
       clientStream.Flush();
-      while (!UserWantsToQuit())
+      string animation = "/|\\-";
+      int index = 0;
+      while (true)
       {
+        // int bytesReceived = clientStream.Read(bytes, 0, bytes.Length);
+        Console.Write($"{animation[index]}\r");
+        index++;
+        if (index >= animation.Length)
+        {
+          index = 0;
+        }
         if (clientStream.DataAvailable)
         {
+          Console.WriteLine();
           int bytesReceived = clientStream.Read(bytes, 0, bytes.Length);
           Console.WriteLine($"Received ({bytesReceived} bytes) " +
                             $"{Encoding.ASCII.GetString(bytes, 0, bytesReceived)}");
@@ -124,6 +149,7 @@ namespace MrV {
           clientStream.Write(Bytes, 0, Bytes.Length);
           clientStream.Flush();
         }
+        Thread.Sleep(1);
       }
     }
 
